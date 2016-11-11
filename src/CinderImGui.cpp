@@ -834,8 +834,8 @@ namespace {
 	void keyDown( ci::app::KeyEvent& event )
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		
-		uint32_t character = event.getCharUtf32();
+
+		uint32_t character = event.isShiftDown() ? event.getChar() : tolower( event.getChar() );
 		
 		io.KeysDown[event.getCode()] = true;
 		
