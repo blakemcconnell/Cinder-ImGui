@@ -826,8 +826,39 @@ namespace {
 		
 		event.setHandled( io.WantCaptureMouse );
 	}
-	
-	
+
+    //helper function to map correct char to key code when shift is pressed
+    char GetShiftChar( const int code ) {
+        char retVal = '0';
+        std::map<int, char> ASCIIShiftCodes = {
+                { 49, '!' },
+                { 50, '@' },
+                { 51, '#' },
+                { 52, '$' },
+                { 53, '%' },
+                { 54, '^' },
+                { 55, '&' },
+                { 56, '*' },
+                { 57, '(' },
+                { 48, ')' },
+                { 45, '_' },
+                { 61, '+' },
+                { 91, '{' },
+                { 93, '}' },
+                { 92, '|' },
+                { 59, ':' },
+                { 39, '"' },
+                { 44, '<' },
+                { 46, '>' },
+                { 47, '?' },
+                { 96, '~' }
+        };
+        if ( ASCIIShiftCodes.find( code ) != ASCIIShiftCodes.end() ) {
+            retVal = ASCIIShiftCodes.find( code )->second;
+        }
+        return retVal;
+    }
+
 	vector<int> sAccelKeys;
 	
 	//! sets the right keyDown IO values in imgui
@@ -835,7 +866,19 @@ namespace {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-		uint32_t character = event.isShiftDown() ? event.getChar() : tolower( event.getChar() );
+        //on Linux, key presses come through incorrectly, the below patches this issue
+        uint32_t character;
+        int keyCode = event.getCode();
+        char keyChar = event.getChar();
+        //key is a letter.  set to lowercase if shift is not pressed
+        if ( keyCode >= 97 && keyCode <= 122 ) {
+            character = event.isShiftDown() ? keyChar : tolower( keyChar );
+        }
+        //key is not a letter.  if shift is pressed, check for the correct char using a lookup function
+        else {
+            char shiftChar = GetShiftChar( keyCode );
+            character = ( event.isShiftDown() && shiftChar != '0' ) ? shiftChar : keyChar;
+        }
 		
 		io.KeysDown[event.getCode()] = true;
 		

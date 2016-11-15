@@ -212,6 +212,8 @@ namespace ImGui {
 	bool ColorPicker3( const char* label, T *object, ci::Color( T::*get )() const, void( T::*set )( const ci::Color& ) );
 	template<typename T>
 	bool ColorPicker4( const char* label, T *object, ci::ColorA( T::*get )() const, void( T::*set )( const ci::ColorA& ) );
+    char GetShiftChar( const int code );
+
 
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
 
